@@ -1,4 +1,4 @@
-#!/home/hlabs/Projects/Django/flatnye/flatenv/bin/python3
+#!/home/herman/Projects/flatnye_backend/flatenv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

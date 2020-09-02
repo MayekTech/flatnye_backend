@@ -9,8 +9,8 @@ from django.utils import timezone
 
 class TimeModel(models.Model):
     class Meta:
-        verbose_name = _("")
-        verbose_name_plural = _("s")
+        verbose_name = ("")
+        verbose_name_plural = ("s")
     
     created_at = models.DateTimeField("Date creation", auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField("Date de mise ajour", auto_now=True, blank=True, null=True)
@@ -38,7 +38,7 @@ class TimeModel(models.Model):
             return val
 
     def __str__(self):
-        return self.name
+        return f"{self.id}"
 
     def get_absolute_url(self):
         return reverse("_detail", kwargs={"pk": self.pk})
@@ -76,7 +76,6 @@ class Bien(TimeModel):
     quartier = models.CharField(max_length=50, blank=True, null=True)
 
     dimensions = models.CharField("Superficie, taille", max_length=100, blank=True, null=True)
-    dimensions = models.SET()
 
     description = models.CharField(max_length=254, blank=True, null=True)
     prix = models.FloatField(blank=True, null=True)
@@ -138,7 +137,7 @@ class Bien(TimeModel):
             return val
 
 class Notation(TimeModel):
-    bien = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    bien_note = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
 
     class Notation(models.IntegerChoices):
         MEDIOCRE = 1
@@ -156,7 +155,7 @@ class Notation(TimeModel):
         
 
 class Commentaire(TimeModel):
-    bien = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    bien_comment = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
     contenu = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -167,7 +166,7 @@ class Commentaire(TimeModel):
 
 
 class Media(TimeModel):
-    bien = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    bien_decrit = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
     titre = models.CharField(max_length=100, blank=True, null=True)
     TYPE_MEDIA = (
         ('V', 'Video'),
@@ -189,7 +188,7 @@ class Media(TimeModel):
         return self.titre
 
 class Visite(TimeModel):
-    bien = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    bien_viste = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
     titre = models.CharField(max_length=100, blank=True, null=True)
 
     def upload_fichier(self, filename):
@@ -204,3 +203,65 @@ class Visite(TimeModel):
     def __unicode__(self):
         return self.titre
 
+class Panier(TimeModel):
+    # owner = models.
+    bien_panier = models.ManyToManyField(Bien, through="AjoutPanier")
+    slug = models.SlugField(max_length = 50)
+    est_regle = models.BooleanField(blank=True, null=True, default=False)
+    
+    def regler(self):
+        val = 0
+        try:
+            self.est_regle = True
+        except:
+            val = -1
+        finally:
+            return val
+        
+    
+    def __str__(self):
+        return self.slug
+
+    def __unicode__(self):
+        return self.slug
+
+class AjoutPanier(TimeModel):
+    bucket = models.ForeignKey(Panier, blank=True, null=True, on_delete=models.CASCADE)
+    article = models.ForeignKey(Bien, blank=True, null=True, on_delete=models.CASCADE)
+    date_ajout = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    TYPE_AJOUT = (
+        ('A', 'Achat'),
+        ('L', 'Location'),
+    )
+    type_ajout = models.CharField(max_length = 1, blank=True, null=True)
+    
+
+    def __str__(self):
+        return self.date_ajout
+
+    def __unicode__(self):
+        return self.date_ajout
+
+
+class Achat(TimeModel):
+    date_achat = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    biens_panier = models.ForeignKey(Panier, on_delete=models.CASCADE, blank=True, null=True)
+    biens = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    montant = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Achat du {self.date_achat}"
+
+    def __unicode__(self):
+        return f"Achat du {self.date_achat}"
+
+class Loaction(TimeModel):
+    date_paiement = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    bien_loue = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    montant = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Loué le {self.date_paiement}" 
+
+    def __unicode__(self):
+        return f"Loué le {self.date_paiement}"

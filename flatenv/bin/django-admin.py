@@ -1,4 +1,4 @@
-#!/home/hlabs/Projects/Django/flatnye/flatenv/bin/python3
+#!/home/herman/Projects/flatnye_backend/flatenv/bin/python3
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
