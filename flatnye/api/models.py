@@ -47,17 +47,33 @@ class TimeModel(models.Model):
 class Compte(TimeModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=True, null=True)
     nom = models.CharField(max_length=50, blank=True, null=True)
-    addresse = models.CharField(max_length=150, blank=True, null=True)
+    adresse = models.CharField(max_length=150, blank=True, null=True)
     email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
     contact = models.CharField(max_length=10, unique=True, null=True, blank=True)
     localisation = models.CharField(max_length=254,  blank=True, null=True)
+    TYPE_COMPTE = (
+        ('Ge', 'Gerant'),
+        ('Ag', 'Agence'),
+    )
+    type_compte = models.CharField(max_length=2, choices=TYPE_COMPTE, blank=True, null=True)
+
     image = models.ImageField(upload_to="User/Profile", blank=True, null=True, verbose_name="Image de profile")
+    valide = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
         return self.nom
 
     def __unicode__(self):
         return self.nom
+
+    def valider(self):
+        val = 0
+        try:
+            self.valide = True
+        except:
+            val = -1
+        finally:
+            return val
 
 # def create_compte(sender, **kwargs):
 #     """
