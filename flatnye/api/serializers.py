@@ -138,6 +138,72 @@ class BienSerializer(serializers.ModelSerializer):
 
         # retourner le bien en cours
         return instance
-
 # post des biens end
 
+#Post d'Article start
+class ArticleSerializer(serializers.ModelSerializer):
+    media_set = MediaSerializer(required=False, many=True, allow_null=True)
+    comment_set = CommentSerializer(read_only=True, many=True)
+
+
+    class Meta:
+        model = Article
+        exclude = ['deleted']
+        read_only_fields = ['created_at', 'updated_at', 'deleted_at']
+
+    def create(self, validated_data):
+        media_data = validated_data.pop('media_set')
+
+        # creer l'article en premier
+        article_encours = Article.objects.create(**validated_data)
+
+        # creer le media et le lier à l'article en cours
+        for media in media_data:
+            Media.objects.create(article_decrit=article_encours, **media)
+    
+        return article_encours
+    
+    def update(self, instance, validated_data):
+        media_data = validated_data.pop('media_set')
+        media = instance.media_set
+
+        # mise a jour du media
+        media.titre = media_data.get('titre', media.titre)
+        media.type = media_data.get('type', media.type)
+        media.save()
+
+        # retourner l'article en cours
+        return instance
+
+#Post d'Article end
+
+#Processus de location start
+class LocationSerializer(serializers.ModelSerializer):
+    # bien_loue = BienSerializer(required=False, many=False, allow_null=True)
+    class Meta:
+        model = Loaction
+        exclude = ['deleted']
+        read_only_fields = ['created_at', 'updated_at', 'deleted_at']
+#Processus de location end
+
+#Processus d'achat start
+class AddPanierSerializer(serializers.ModelSerializer):
+    # bien_loue = BienSerializer(required=False, many=False, allow_null=True)
+    class Meta:
+        model = AjoutPanier
+        exclude = ['deleted']
+        read_only_fields = ['created_at', 'updated_at', 'deleted_at']
+
+class PanierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Panier
+        exclude = ['deleted']
+        read_only_fields = ['created_at', 'updated_at', 'deleted_at']
+
+class AchatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achat
+        exclude = ['deleted']
+        read_only_fields = ['created_at', 'updated_at', 'deleted_at']
+
+#Processus d'achat end

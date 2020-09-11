@@ -314,3 +314,6 @@ class CommentSet(viewsets.ModelViewSet):
     # Methodes suplementaire de viste end
 
 # Post des biens et ses descritions(Images, Videos, Viste) end
+
+# Poster des Articles (avec Images, Videos, Gifs) start
+# Post des Articles (avec Images, Videos, Gifs) end

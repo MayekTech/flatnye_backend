@@ -94,6 +94,23 @@ class Compte(TimeModel):
 # post_save.connect(create_compte, sender=User)
 
 
+class Article(models.Model):
+    titre = models.CharField("Titre de l'article", max_length=150, blank=True, null=True)
+    texte = models.TextField("Contenu de l'article", blank=True, null=True)
+    ETAT_ARTICLE = (
+        ('Pub', 'Publié'),
+        ('Brl', 'Brouillon'),
+        ('Anl', 'Annulé'),
+    )
+    etat = models.CharField(max_length=3, choices=ETAT_ARTICLE, blank=True, null=True)
+
+    def __str__(self):
+        return self.titre
+
+    def __unicode__(self):
+        return self.titre
+
+
 class Bien(TimeModel):
     agence = models.ForeignKey(
         Compte, on_delete=models.CASCADE, blank=True, null=True)
@@ -191,8 +208,8 @@ class Notation(TimeModel):
 
 
 class Commentaire(TimeModel):
-    bien_comment = models.ForeignKey(
-        Bien, on_delete=models.CASCADE, blank=True, null=True)
+    bien_comment = models.ForeignKey(Bien, on_delete=models.CASCADE, blank=True, null=True)
+    article_comment = models.ForeignKey(Article, on_delete=models.CASCADE, blank=True, null=True)
     contenu = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -200,24 +217,6 @@ class Commentaire(TimeModel):
 
     def __unicode__(self):
         return f"{self.id}"
-
-
-class Article(models.Model):
-    titre = models.CharField("Titre de l'article", max_length=150, blank=True, null=True)
-    texte = models.TextField("Contenu de l'article", blank=True, null=True)
-    ETAT_ARTICLE = (
-        ('Pub', 'Publié'),
-        ('Brl', 'Brouillon'),
-        ('Anl', 'Annulé'),
-    )
-    etat = models.CharField(max_length=3, choices=ETAT_ARTICLE, blank=True, null=True)
-
-    def __str__(self):
-        return self.titre
-
-    def __unicode__(self):
-        return self.titre
-
 
 class Media(TimeModel):
     bien_decrit = models.ForeignKey(
@@ -288,8 +287,7 @@ class Panier(TimeModel):
 class AjoutPanier(TimeModel):
     bucket = models.ForeignKey(
         Panier, blank=True, null=True, on_delete=models.CASCADE)
-    article = models.ForeignKey(
-        Bien, blank=True, null=True, on_delete=models.CASCADE)
+    bien_ajout = models.ForeignKey(Bien, blank=True, null=True, on_delete=models.CASCADE)
     date_ajout = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     TYPE_AJOUT = (
         ('A', 'Achat'),
