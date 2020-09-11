@@ -316,4 +316,66 @@ class CommentSet(viewsets.ModelViewSet):
 # Post des biens et ses descritions(Images, Videos, Viste) end
 
 # Poster des Articles (avec Images, Videos, Gifs) start
+
+class ArticleSet(viewsets.ModelViewSet):
+    queryset = Article.objects.filter(deleted=False)
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    # Methodes suplementaire de viste start
+    def destroy(self, request, pk=None):
+        objet = Article.objects.get(pk=pk)
+        try:
+            # objet.deleted = True
+            # objet.deleted_at = timezone.now()
+            objet.suppress()
+            objet.save()
+            return Response({'status': 'Suppression faite'})
+        except:
+            return Response({'status': 'Erreur lors de la suppression'})
+
+    @action(detail=True, permission_classes=[permissions.IsAuthenticated])
+    def restore(self, request, pk=None):
+        objet = Article.objects.get(pk=pk)
+        try:
+            # objet.deleted = False
+            # objet.deleted_at = None
+            objet.restore()
+            objet.save()
+            return Response({'status': 'Les données ont été restaurées avec succes'})
+        except:
+            return Response({'status': 'Erreur lors de la suppression'})
+
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated])
+    def get_deleted_list(self, request):
+        objet = Article.objects.filter(deleted=True).order_by('-deleted_at')
+        serializer = self.get_serializer(objet, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, permission_classes=[permissions.IsAuthenticated])
+    def publier(self, request, pk=None):
+        objet = Media.objects.get(pk=pk)
+        try:
+            # objet.deleted = False
+            # objet.deleted_at = None
+            objet.publier()
+            objet.save()
+            return Response({'status': "L'article a ete publié avec succes"})
+        except:
+            return Response({'status': "Une Erreur est survenue lors de la publication"})
+    
+    @action(detail=True, permission_classes=[permissions.IsAuthenticated])
+    def annuler(self, request, pk=None):
+        objet = Media.objects.get(pk=pk)
+        try:
+            # objet.deleted = False
+            # objet.deleted_at = None
+            objet.annuler()
+            objet.save()
+            return Response({'status': "Vous avez annuler la publication de cet article"})
+        except:
+            return Response({'status': "Erreur lors de l'annulation"})
+    # Methodes suplementaire de viste end
+
+
 # Post des Articles (avec Images, Videos, Gifs) end

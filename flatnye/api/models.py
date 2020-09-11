@@ -102,13 +102,32 @@ class Article(models.Model):
         ('Brl', 'Brouillon'),
         ('Anl', 'Annulé'),
     )
-    etat = models.CharField(max_length=3, choices=ETAT_ARTICLE, blank=True, null=True)
+    etat = models.CharField(default='Brl', max_length=3, choices=ETAT_ARTICLE, blank=True, null=True)
 
     def __str__(self):
         return self.titre
 
     def __unicode__(self):
         return self.titre
+    
+    def publier(self):
+        val = 0
+        try:
+            self.etat = 'Pub'
+        except:
+            val = -1
+        finally:
+            return val
+
+    def annuler(self):
+        val = 0
+        try:
+            self.etat = 'anl'
+        except:
+            val = -1
+        finally:
+            return val
+
 
 
 class Bien(TimeModel):

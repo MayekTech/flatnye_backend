@@ -18,6 +18,7 @@ router.register(r'bien/media', views.MediaSet)
 router.register(r'visite', views.VisiteSet)
 router.register(r'notation', views.NotationSet)
 router.register(r'commentaire', views.CommentSet)
+router.register(r'blog', views.ArticleSet)
 
 
 urlpatterns = [
