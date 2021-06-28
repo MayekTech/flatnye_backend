@@ -94,7 +94,7 @@ class Compte(TimeModel):
 # post_save.connect(create_compte, sender=User)
 
 
-class Article(models.Model):
+class Article(TimeModel):
     titre = models.CharField("Titre de l'article", max_length=150, blank=True, null=True)
     texte = models.TextField("Contenu de l'article", blank=True, null=True)
     ETAT_ARTICLE = (
